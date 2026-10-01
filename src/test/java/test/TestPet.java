@@ -94,6 +94,28 @@ public class TestPet {
         );
 
     }
+    @Test
+    @Feature("Pet")
+    @Severity(SeverityLevel.CRITICAL)
+    @Owner("anna krutych")
+    public void testGetsNonexistentPet(){
+        Response response = step("Отправить Get запрос на получение несуществующих питомцев",() ->
+                given()
+                        .contentType(ContentType.JSON)
+                        .header("Accept", "appLication/json")
+                        .when()
+                        .get(BASE_URL + "/pet/9999"));
 
+        String responseBody = response.getBody().asString();
+        step("Проверить, что статус - код ответа == 404", () ->
+                assertEquals(404, response.getStatusCode(),
+                        "Код ответа не совпал с ожидаемымю  Ответ:" + responseBody)
+        );
+        step("Проверить, что текст ответа 'Pet not found'", () ->
+                assertEquals("Pet not found", responseBody,
+                        "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
+        );
+
+    }
 
 }

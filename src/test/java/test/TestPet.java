@@ -17,7 +17,7 @@ public class TestPet {
     private static final String BASE_URL = "http://5.181.109.28:9090/api/v3";
 
     @Test
-    @Feature("models.Pet")
+    @Feature("Pet")
     @Severity(SeverityLevel.CRITICAL)
     @Owner("anna krutych")
     public void testDeleteNonexistentPet() {
@@ -41,7 +41,7 @@ public class TestPet {
         );
     }
 @Test
-@Feature("models.Pet")
+@Feature("Pet")
 @Severity(SeverityLevel.CRITICAL)
 @Owner("anna krutych")
     public void testUpdateNonexistentPet() {

@@ -8,6 +8,8 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.Pet;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
@@ -116,6 +118,44 @@ public class TestPet {
                         "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
         );
 
+    }
+    @ParameterizedTest(name = "Добавление питомца со статусом:{2}")
+    @CsvSource({
+            "200, Kiwi, available",
+            "201, Buddy, pending",
+            "202, Garfield, sold"
+    })
+    @Feature("Pet")
+    @Severity(SeverityLevel.CRITICAL)
+    @Owner("anna krutych")
+    public void testAddNewPet(int id, String name, String status) {
+        Pet pet = new Pet();
+        pet.setId(id);
+        pet.setName(name);
+        pet.setStatus(status);
+
+        Response response = step("Отправить Put запрос на добавление питомца", () ->
+                given()
+                        .contentType(ContentType.JSON)
+                        .header("Accept", "appLication/json")
+                        .body(pet)
+                        .when()
+                        .post(BASE_URL + "/pet"));
+
+
+        String responseBody = response.getBody().asString();
+
+        step("Проверить, что статус-код ответа ==200", ()->
+                assertEquals(200, response.getStatusCode(),
+                        "Код ответа не совпал с ожидаемым. Ответ: " + responseBody)
+        );
+        step("Проверка параметров созданного питомца",()->{
+                Pet createdPet = response.as(Pet.class);
+                assertEquals(pet.getId(), createdPet.getId(), "id питомца не совпадает с ожидаемым");
+                assertEquals(pet.getName(), createdPet.getName(), "имя питомца не совпадает с ожидаемым");
+                assertEquals(pet.getStatus(), createdPet.getStatus(), "статус питомца не совпадает с ожидаемым");
+                 }
+        );
     }
 
 }
